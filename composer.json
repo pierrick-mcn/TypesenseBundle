@@ -1,8 +1,14 @@
 {
-    "name": "n2oo/typesense-bundle",
+    "name": "acseo/typesense-bundle",
     "description": "This bundle provides integration with Typesense in Symfony",
     "type": "symfony-bundle",
     "license": "MIT",
+    "authors": [
+        {
+            "name": "Nicolas Potier",
+            "email": "nicolas.potier@acseo.fr"
+        }
+    ],
     "require": {
         "php": "^7.4||^8.0",
         "doctrine/orm": "~2.8,>=2.8.0",
