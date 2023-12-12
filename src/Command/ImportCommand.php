@@ -179,9 +179,7 @@ class ImportCommand extends Command
             }
 
             $populated += count($data);
-           if($i % 25 == 0){
-               $this->em->clear();//clear cache every 25 iterations
-           }
+            $this->em->clear();//clear cache every iteration
        }
        $this->em->clear();//clear cache after processing all data
 
