@@ -47,7 +47,7 @@ jobs:
       typesense:
         # Docker Hub image
         image: typesense/typesense:0.25.2
-        environment:
+        env:
           TYPESENSE_DATA_DIR: /data
           TYPESENSE_API_KEY: 123
           TYPESENSE_ENABLE_CORS: true
