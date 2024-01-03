@@ -8,26 +8,26 @@ use ACSEO\TypesenseBundle\Manager\CollectionManager;
 use ACSEO\TypesenseBundle\Manager\DocumentManager;
 use ACSEO\TypesenseBundle\Transformer\DoctrineToTypesenseTransformer;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
+#[AsCommand('typesense:import')]
 class ImportCommand extends Command
 {
-    protected static $defaultName = 'typesense:import';
-
-    private $em;
-    private $collectionManager;
-    private $documentManager;
-    private $transformer;
+    private EntityManagerInterface $em;
+    private CollectionManager $collectionManager;
+    private DocumentManager $documentManager;
+    private DoctrineToTypesenseTransformer $transformer;
     private const ACTIONS = [
         'create',
         'upsert',
         'update',
     ];
-    private $isError = false;
+    private bool $isError = false;
 
     public function __construct(
         EntityManagerInterface $em,
@@ -42,10 +42,9 @@ class ImportCommand extends Command
         $this->transformer       = $transformer;
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this
-            ->setName(self::$defaultName)
             ->setDescription('Import collections from Database')
             ->addOption('action', null, InputOption::VALUE_OPTIONAL, 'Action modes for typesense import ("create", "upsert" or "update")', 'upsert')
             ->addOption('indexes', null, InputOption::VALUE_OPTIONAL, 'The index(es) to repopulate. Comma separated values')
