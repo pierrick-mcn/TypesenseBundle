@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace ACSEO\TypesenseBundle\DependencyInjection;
 
+use Exception;
+use InvalidArgumentException;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -18,23 +20,26 @@ class ACSEOTypesenseExtension extends Extension
      *
      * @var array
      */
-    private $collectionsConfig = [];
+    private array $collectionsConfig = [];
 
     /**
      * An array of finder as configured by the extension.
      *
      * @var array
      */
-    private $findersConfig = [];
+    private array $findersConfig = [];
 
     /**
      * An array of parameters to use as configured by the extension.
      *
      * @var array
      */
-    private $parameters = [];
+    private array $parameters = [];
 
-    public function load(array $configs, ContainerBuilder $container)
+  /**
+   * @throws Exception
+   */
+  public function load(array $configs, ContainerBuilder $container): void
     {
         $configuration = new Configuration();
 
@@ -69,7 +74,7 @@ class ACSEOTypesenseExtension extends Extension
      *
      * @param ContainerBuilder $container A ContainerBuilder instance
      */
-    private function loadClient($config, ContainerBuilder $container)
+    private function loadClient($config, ContainerBuilder $container): void
     {
         $clientId = ('typesense.client');
 
@@ -87,9 +92,9 @@ class ACSEOTypesenseExtension extends Extension
      * @param array            $collections An array of collection configurations
      * @param ContainerBuilder $container   A ContainerBuilder instance
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException|Exception
      */
-    private function loadCollections(array $collections, ContainerBuilder $container)
+    private function loadCollections(array $collections, ContainerBuilder $container): void
     {
         foreach ($collections as $name => $config) {
             $collectionName = $this->parameters['collection_prefix'] . ($config['collection_name'] ?? $name);
@@ -98,10 +103,10 @@ class ACSEOTypesenseExtension extends Extension
 
             foreach ($config['fields'] as $key => $fieldConfig) {
                 if (!isset($fieldConfig['name'])) {
-                    throw new \Exception('acseo_typesense.collections.'.$name.'.'.$key.'.name must be set');
+                    throw new Exception('acseo_typesense.collections.'.$name.'.'.$key.'.name must be set');
                 }
                 if (!isset($fieldConfig['type'])) {
-                    throw new \Exception('acseo_typesense.collections.'.$name.'.'.$key.'.type must be set');
+                    throw new Exception('acseo_typesense.collections.'.$name.'.'.$key.'.type must be set');
                 }
 
                 if ($fieldConfig['type'] === 'primary') {
@@ -126,7 +131,7 @@ class ACSEOTypesenseExtension extends Extension
                     $finderConfig['name']            = $name;
                     $finderConfig['finder_name']     = $finderName;
                     if (!isset($finderConfig['finder_parameters']['query_by'])) {
-                        throw new \Exception('acseo_typesense.collections.'.$finderName.'.finder_parameters.query_by must be set');
+                        throw new Exception('acseo_typesense.collections.'.$finderName.'.finder_parameters.query_by must be set');
                     }
                     $this->findersConfig[$finderName] = $finderConfig;
                 }
@@ -147,7 +152,7 @@ class ACSEOTypesenseExtension extends Extension
     /**
      * Loads the collection manager.
      */
-    private function loadCollectionManager(ContainerBuilder $container)
+    private function loadCollectionManager(ContainerBuilder $container): void
     {
         $managerDef = $container->getDefinition('typesense.collection_manager');
         $managerDef->replaceArgument(2, $this->collectionsConfig);
@@ -156,7 +161,7 @@ class ACSEOTypesenseExtension extends Extension
     /**
      * Loads the transformer.
      */
-    private function loadTransformer(ContainerBuilder $container)
+    private function loadTransformer(ContainerBuilder $container): void
     {
         $managerDef = $container->getDefinition('typesense.transformer.doctrine_to_typesense');
         $managerDef->replaceArgument(0, $this->collectionsConfig);
@@ -165,7 +170,7 @@ class ACSEOTypesenseExtension extends Extension
     /**
      * Loads the configured index finders.
      */
-    private function loadCollectionsFinder(ContainerBuilder $container)
+    private function loadCollectionsFinder(ContainerBuilder $container): void
     {
         foreach ($this->collectionsConfig as $name => $config) {
             $collectionName = $config['name'];
@@ -182,7 +187,7 @@ class ACSEOTypesenseExtension extends Extension
     /**
      * Loads the configured Finder services.
      */
-    private function loadFinderServices(ContainerBuilder $container)
+    private function loadFinderServices(ContainerBuilder $container): void
     {
         foreach ($this->findersConfig as $name => $config) {
             $finderName     = $config['finder_name'];
@@ -202,7 +207,7 @@ class ACSEOTypesenseExtension extends Extension
         }
     }
 
-    private function configureController(ContainerBuilder $container)
+    private function configureController(ContainerBuilder $container): void
     {
         $finderServices = [];
         foreach ($this->findersConfig as $name => $config) {
