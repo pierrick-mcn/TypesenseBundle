@@ -30,7 +30,7 @@ class DoctrineToTypesenseTransformer extends AbstractTransformer
 
     public function convert($entity): array
     {
-        $entityClass = ClassUtils::getClass($entity);
+        $entityClass = get_class($entity);
 
         // See : https://github.com/acseo/TypesenseBundle/pull/91
         // Allow subclasses to be recognized as a parent class
