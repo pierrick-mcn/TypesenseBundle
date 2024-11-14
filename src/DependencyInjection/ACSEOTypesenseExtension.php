@@ -121,6 +121,7 @@ class ACSEOTypesenseExtension extends Extension
                 $config['fields']['id'] = [
                     'name' => 'entity_id',
                     'type' => 'primary',
+                    'entity_attribute' => 'id'
                 ];
             }
 
